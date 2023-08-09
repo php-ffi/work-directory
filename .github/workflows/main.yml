@@ -32,7 +32,7 @@ jobs:
       - name: Validate Composer
         run: composer validate
       - name: Install Dependencies
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 5
           max_attempts: 5

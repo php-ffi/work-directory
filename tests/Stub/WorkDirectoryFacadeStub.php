@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FFI\WorkDirectory\Tests;
+namespace FFI\WorkDirectory\Tests\Stub;
 
 use FFI\WorkDirectory\Driver\DriverInterface;
 use FFI\WorkDirectory\WorkDirectory;

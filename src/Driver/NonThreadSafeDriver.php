@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace FFI\WorkDirectory\Driver;
 
 /**
- * @internal This is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal FFI\WorkDirectory
  */
 final class NonThreadSafeDriver implements DriverInterface

@@ -7,10 +7,10 @@ namespace FFI\WorkDirectory\Driver;
 use FFI\CData;
 
 /**
- * @psalm-suppress all
- *
- * @internal This is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal FFI\WorkDirectory
+ *
+ * @psalm-suppress all
  */
 abstract class UnixAwareThreadSafeDriver extends ThreadSafeDriver
 {

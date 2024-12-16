@@ -7,10 +7,10 @@ namespace FFI\WorkDirectory\Driver;
 use FFI\CData;
 
 /**
- * @psalm-suppress all
- *
- * @internal This is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal FFI\WorkDirectory
+ *
+ * @psalm-suppress all
  */
 final class WindowsThreadSafeDriver extends ThreadSafeDriver
 {
@@ -91,7 +91,7 @@ final class WindowsThreadSafeDriver extends ThreadSafeDriver
         $result = null;
 
         if ($length !== 0) {
-            $char8Array = $this->ffi->cast("char*", $uint16ArrayPointer);
+            $char8Array = $this->ffi->cast('char*', $uint16ArrayPointer);
             $char8ArrayPointer = \FFI::addr($char8Array[0]);
 
             $result = \FFI::string($char8ArrayPointer, $length * 2);
@@ -119,7 +119,7 @@ final class WindowsThreadSafeDriver extends ThreadSafeDriver
 
         \FFI::memcpy($charArrayPointer, $directory, $bytes);
 
-        $bytesDiv2 = (int)\ceil($bytes / 2);
+        $bytesDiv2 = (int) \ceil($bytes / 2);
         $uint16Array = \FFI::cast("uint16_t[$bytesDiv2]", $charArray);
         $uint16ArrayPointer = \FFI::addr($uint16Array[0]);
 

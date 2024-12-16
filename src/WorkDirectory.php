@@ -12,9 +12,6 @@ use FFI\WorkDirectory\Driver\WindowsThreadSafeDriver;
 
 final class WorkDirectory
 {
-    /**
-     * @var DriverInterface|null
-     */
     private static ?DriverInterface $driver = null;
 
     private static function driver(): DriverInterface
@@ -47,8 +44,8 @@ final class WorkDirectory
      * mode set, even if the current directory does. See chmod for more
      * information on modes and permissions.
      *
-     * @return non-empty-string|null The current working directory on success,
-     *         or {@see null} on failure.
+     * @return non-empty-string|null the current working directory on success,
+     *         or {@see null} on failure
      */
     public static function get(): ?string
     {
@@ -61,9 +58,9 @@ final class WorkDirectory
      * Change directory.
      *
      * @psalm-taint-sink file $directory
-     * @param non-empty-string $directory The new current directory.
+     * @param non-empty-string $directory the new current directory
      *
-     * @return bool Returns {@see true} on success or {@see false} on failure.
+     * @return bool returns {@see true} on success or {@see false} on failure
      */
     public static function set(string $directory): bool
     {

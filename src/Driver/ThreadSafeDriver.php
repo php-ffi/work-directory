@@ -7,7 +7,7 @@ namespace FFI\WorkDirectory\Driver;
 use FFI\Env\Runtime;
 
 /**
- * @internal This is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal FFI\WorkDirectory
  */
 abstract class ThreadSafeDriver implements DriverInterface

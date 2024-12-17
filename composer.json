@@ -29,9 +29,11 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.22",
-        "vimeo/psalm": "^5.14",
-        "phpunit/phpunit": "^9.6"
+        "phpunit/phpunit": "^9.5",
+        "friendsofphp/php-cs-fixer": "^3.53",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0"
     },
     "autoload-dev": {
         "psr-4": {
@@ -39,18 +41,21 @@
         }
     },
     "config": {
-        "sort-packages": true,
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
     },
     "scripts": {
-        "psalm": "@psalm:check",
-        "psalm:check": "psalm --no-cache",
-        "psalm:fix": "psalm --no-cache --alter",
+        "test": ["@test:unit"],
+        "test:unit": "phpunit --testdox --testsuite=unit",
+        "linter": "@linter:check",
+        "linter:check": "phpstan analyse --configuration phpstan.neon",
+        "linter:baseline": "@linter:check -- --generate-baseline",
         "phpcs": "@phpcs:check",
-        "phpcs:check": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes --dry-run",
-        "phpcs:fix": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes",
-        "test": "@test:unit",
-        "test:unit": "phpunit --testdox"
+        "phpcs:check": "@phpcs:fix -- --dry-run",
+        "phpcs:fix": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes --verbose --diff"
     },
     "extra": {
         "branch-alias": {

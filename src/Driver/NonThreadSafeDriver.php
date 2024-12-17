@@ -12,6 +12,8 @@ final class NonThreadSafeDriver implements DriverInterface
 {
     public function get(): ?string
     {
+        // Allow short ternary operator
+        // @phpstan-ignore ternary.shortNotAllowed
         return \getcwd() ?: null;
     }
 

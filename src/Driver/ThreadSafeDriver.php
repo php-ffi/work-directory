@@ -29,19 +29,19 @@ abstract class ThreadSafeDriver implements DriverInterface
      */
     private function getInitialCurrentWorkingDirectory(): ?string
     {
-        if ($directory = \getcwd()) {
+        if ((bool) ($directory = \getcwd()) !== false) {
             return $directory;
         }
 
-        if (isset($_SERVER['SCRIPT_NAME']) && $directory = \dirname($_SERVER['SCRIPT_NAME'])) {
+        if (($directory = $this->fetchVariable('SCRIPT_NAME')) !== null) {
             return $directory;
         }
 
-        if (isset($_SERVER['SCRIPT_FILENAME']) && $directory = \dirname($_SERVER['SCRIPT_FILENAME'])) {
+        if (($directory = $this->fetchVariable('SCRIPT_FILENAME')) !== null) {
             return $directory;
         }
 
-        if (isset($_SERVER['PHP_SELF']) && $directory = \dirname($_SERVER['PHP_SELF'])) {
+        if (($directory = $this->fetchVariable('PHP_SELF')) !== null) {
             return $directory;
         }
 
@@ -49,15 +49,38 @@ abstract class ThreadSafeDriver implements DriverInterface
     }
 
     /**
-     * @return array{fallback:non-empty-string|null}
+     * @param non-empty-string $variable
+     * @return non-empty-string|null
      */
-    public function __serialize(): array
+    private function fetchVariable(string $variable): ?string
     {
-        return ['fallback' => $this->fallback];
+        if (!isset($_SERVER[$variable]) || !\is_string($_SERVER[$variable])) {
+            return null;
+        }
+
+        $directory = \dirname($_SERVER[$variable]);
+
+        return $directory === '' ? null : $directory;
     }
 
     /**
-     * @param array{fallback:non-empty-string|null} $data
+     * @return array{
+     *     fallback: non-empty-string|null,
+     *     ...
+     * }
+     */
+    public function __serialize(): array
+    {
+        return [
+            'fallback' => $this->fallback,
+        ];
+    }
+
+    /**
+     * @param array{
+     *     fallback?: non-empty-string|null,
+     *     ...
+     * } $data
      */
     public function __unserialize(array $data): void
     {

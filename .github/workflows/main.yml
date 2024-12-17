@@ -3,8 +3,6 @@ name: build
 on:
   push:
   pull_request:
-  schedule:
-    - cron: '0 0 * * *'
 
 jobs:
   tests:
@@ -13,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ '7.4', '8.0', '8.1', '8.2' ]
+        php: [ '7.4', '8.0', '8.1', '8.2', '8.3', '8.4' ]
         ts: [ 'ts', 'nts' ]
         os: [ ubuntu-latest, macos-latest, windows-latest ]
         stability: [ prefer-lowest, prefer-stable ]
@@ -38,4 +36,4 @@ jobs:
           max_attempts: 5
           command: composer update --prefer-dist --no-interaction --no-progress
       - name: Execute Tests
-        run: vendor/bin/phpunit --testdox
+        run: composer test

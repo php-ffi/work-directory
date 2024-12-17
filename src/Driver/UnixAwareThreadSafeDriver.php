@@ -39,6 +39,7 @@ abstract class UnixAwareThreadSafeDriver extends ThreadSafeDriver
 
     private function boot(): void
     {
+        // @phpstan-ignore-next-line : PHPStan false-positive
         $this->ffi = \FFI::cdef(self::STDLIB);
     }
 
@@ -55,7 +56,8 @@ abstract class UnixAwareThreadSafeDriver extends ThreadSafeDriver
          * modified by the program, but may be overwritten by a subsequent
          * call to the getenv function.
          *
-         * @var CData $directory
+         * @var CData|null $directory
+         * @phpstan-ignore-next-line : PHPStan false-positive
          */
         $directory = $this->ffi->getenv(static::getEnvVariableName());
 
@@ -63,11 +65,14 @@ abstract class UnixAwareThreadSafeDriver extends ThreadSafeDriver
             return $this->fallback;
         }
 
+        // Allow short ternary operator
+        // @phpstan-ignore ternary.shortNotAllowed
         return \FFI::string($directory) ?: $this->fallback;
     }
 
     public function set(string $directory): bool
     {
+        // @phpstan-ignore-next-line : PHPStan false-positive
         return $this->ffi->setenv(static::getEnvVariableName(), $directory, 1) === 0;
     }
 

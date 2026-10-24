@@ -98,31 +98,28 @@ final class WindowsThreadSafeDriver extends ThreadSafeDriver
 
     public function get(): ?string
     {
-        $bufferSizeDiv2 = self::DEFAULT_EXPECTED_BUFFER_SIZE;
-        $uint16Array = $this->ffi->new("uint16_t[$bufferSizeDiv2]", false);
-        // @phpstan-ignore-next-line : FFI object "addr" call PHPStan false-positive
-        $uint16ArrayPointer = \FFI::addr($uint16Array[0]);
+        $size = self::DEFAULT_EXPECTED_BUFFER_SIZE;
 
-        // @phpstan-ignore-next-line : Method not found PHPStan false-positive
-        $length = (int) $this->ffi->GetDllDirectoryW(self::DEFAULT_EXPECTED_BUFFER_SIZE, $uint16Array);
+        // The buffer is too small if the returned length (without the
+        // terminating null) does not fit into it: repeat with required size.
+        do {
+            $buffer = $this->ffi->new("uint16_t[$size]");
+            // @phpstan-ignore-next-line : Method not found PHPStan false-positive
+            $length = (int) $this->ffi->GetDllDirectoryW($size, $buffer);
+            $fits = $length < $size;
+            $size = $length + 1;
+        } while (!$fits);
+
         $result = null;
 
         if ($length > 0) {
-            $char8Array = $this->ffi->cast('char*', $uint16ArrayPointer);
-            // @phpstan-ignore-next-line : PHPStan false-positive
-            $char8ArrayPointer = \FFI::addr($char8Array[0]);
-
-            $result = \FFI::string($char8ArrayPointer, $length * 2);
+            $result = \FFI::string($buffer, $length * 2);
             $result = \mb_convert_encoding($result, $this->internal, $this->external);
         }
 
-        try {
-            // Allow short ternary operation
-            // @phpstan-ignore ternary.shortNotAllowed
-            return $result ?: $this->fallback;
-        } finally {
-            \FFI::free($uint16Array);
-        }
+        // Allow short ternary operation
+        // @phpstan-ignore ternary.shortNotAllowed
+        return $result ?: $this->fallback;
     }
 
     public function set(string $directory): bool
@@ -132,26 +129,17 @@ final class WindowsThreadSafeDriver extends ThreadSafeDriver
             return $this->ffi->SetDllDirectoryA($directory) !== 0;
         }
 
-        $directory = \mb_convert_encoding($directory, $this->external, $this->internal) . "\0\0";
+        $encoded = \mb_convert_encoding($directory, $this->external, $this->internal) . "\0\0";
 
-        $bytes = \strlen($directory);
-        $charArray = $this->ffi->new("char[$bytes]", false);
-        // @phpstan-ignore-next-line : PHPStan false-positive
-        $charArrayPointer = \FFI::addr($charArray[0]);
+        $bytes = \strlen($encoded);
+        $units = \intdiv($bytes + 1, 2);
 
-        \FFI::memcpy($charArrayPointer, $directory, $bytes);
+        // The memory is owned by PHP and released automatically
+        $buffer = $this->ffi->new("uint16_t[$units]");
+        \FFI::memcpy($buffer, $encoded, $bytes);
 
-        $bytesDiv2 = (int) \ceil($bytes / 2);
-        $uint16Array = $this->ffi->cast("uint16_t[$bytesDiv2]", $charArray);
-        // @phpstan-ignore-next-line : PHPStan false-positive
-        $uint16ArrayPointer = \FFI::addr($uint16Array[0]);
-
-        try {
-            // @phpstan-ignore-next-line : Method not found PHPStan false-positive
-            return $this->ffi->SetDllDirectoryW(\FFI::addr($uint16Array[0])) !== 0;
-        } finally {
-            \FFI::free($uint16ArrayPointer);
-        }
+        // @phpstan-ignore-next-line : Method not found PHPStan false-positive
+        return $this->ffi->SetDllDirectoryW($buffer) !== 0;
     }
 
     /**

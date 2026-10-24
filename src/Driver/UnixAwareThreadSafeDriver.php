@@ -48,7 +48,34 @@ abstract class UnixAwareThreadSafeDriver extends ThreadSafeDriver
      */
     abstract protected static function getEnvVariableName(): string;
 
+    /**
+     * Returns the first entry of the variable, which is the directory that
+     * was set last (see {@see set()}).
+     */
     public function get(): ?string
+    {
+        $directories = $this->getDirectories();
+
+        return $directories[0] ?? $this->fallback;
+    }
+
+    /**
+     * Prepends the directory to the list of already registered directories
+     * instead of replacing them.
+     */
+    public function set(string $directory): bool
+    {
+        $directories = \array_diff($this->getDirectories(), [$directory]);
+        \array_unshift($directories, $directory);
+
+        // @phpstan-ignore-next-line : PHPStan false-positive
+        return $this->ffi->setenv(static::getEnvVariableName(), \implode(':', $directories), 1) === 0;
+    }
+
+    /**
+     * @return list<non-empty-string>
+     */
+    private function getDirectories(): array
     {
         /**
          * Note: The getenv function returns a pointer to a string associated
@@ -56,25 +83,20 @@ abstract class UnixAwareThreadSafeDriver extends ThreadSafeDriver
          * modified by the program, but may be overwritten by a subsequent
          * call to the getenv function.
          *
-         * @var CData|null $directory
+         * @var CData|null $value
          *
          * @phpstan-ignore-next-line : PHPStan false-positive
          */
-        $directory = $this->ffi->getenv(static::getEnvVariableName());
+        $value = $this->ffi->getenv(static::getEnvVariableName());
 
-        if ($directory === null) {
-            return $this->fallback;
+        if ($value === null) {
+            return [];
         }
 
-        // Allow short ternary operator
-        // @phpstan-ignore ternary.shortNotAllowed
-        return \FFI::string($directory) ?: $this->fallback;
-    }
-
-    public function set(string $directory): bool
-    {
-        // @phpstan-ignore-next-line : PHPStan false-positive
-        return $this->ffi->setenv(static::getEnvVariableName(), $directory, 1) === 0;
+        return \array_values(\array_filter(
+            \explode(':', \FFI::string($value)),
+            static fn(string $entry): bool => $entry !== '',
+        ));
     }
 
     public function __unserialize(array $data): void

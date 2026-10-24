@@ -59,7 +59,6 @@ final class WorkDirectory
      *
      * @psalm-taint-sink file $directory
      * @param non-empty-string $directory the new current directory
-     *
      * @return bool returns {@see true} on success or {@see false} on failure
      */
     public static function set(string $directory): bool

@@ -29,11 +29,11 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5",
-        "friendsofphp/php-cs-fixer": "^3.53",
-        "phpstan/phpstan": "^2.0",
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpstan/phpstan": "^2.3",
         "phpstan/phpstan-deprecation-rules": "^2.0",
-        "phpstan/phpstan-strict-rules": "^2.0"
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpunit/phpunit": "^9.6|^10.5|^11.0|^12.0|^13.0"
     },
     "autoload-dev": {
         "psr-4": {
@@ -50,7 +50,7 @@
     "scripts": {
         "test": ["@test:unit"],
         "test:unit": "phpunit --testdox --testsuite=unit",
-        "linter": "@linter:check",
+        
         "linter:check": "phpstan analyse --configuration phpstan.neon",
         "linter:baseline": "@linter:check -- --generate-baseline",
         "phpcs": "@phpcs:check",

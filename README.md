@@ -1,14 +1,14 @@
 # Work Directory
 
 <p align="center">
-    <a href="https://packagist.org/packages/ffi/work-directory"><img src="https://poser.pugx.org/ffi/work-directory/require/php?style=for-the-badge" alt="PHP 8.1+"></a>
+    <a href="https://packagist.org/packages/ffi/work-directory"><img src="https://poser.pugx.org/ffi/work-directory/require/php?style=for-the-badge" alt="PHP 7.4+"></a>
     <a href="https://packagist.org/packages/ffi/work-directory"><img src="https://poser.pugx.org/ffi/work-directory/version?style=for-the-badge" alt="Latest Stable Version"></a>
     <a href="https://packagist.org/packages/ffi/work-directory"><img src="https://poser.pugx.org/ffi/work-directory/v/unstable?style=for-the-badge" alt="Latest Unstable Version"></a>
     <a href="https://packagist.org/packages/ffi/work-directory"><img src="https://poser.pugx.org/ffi/work-directory/downloads?style=for-the-badge" alt="Total Downloads"></a>
     <a href="https://raw.githubusercontent.com/php-ffi/work-directory/master/LICENSE.md"><img src="https://poser.pugx.org/ffi/work-directory/license?style=for-the-badge" alt="License MIT"></a>
 </p>
 <p align="center">
-    <a href="https://github.com/php-ffi/work-directory/actions"><img src="https://github.com/php-ffi/work-directory/workflows/build/badge.svg"></a>
+    <a href="https://github.com/php-ffi/work-directory/actions"><img src="https://github.com/php-ffi/work-directory/workflows/Tests/badge.svg"></a>
 </p>
 
 In the case that during the loading of a binary (like `*.so`, `*.dylib` or `*.dll`)

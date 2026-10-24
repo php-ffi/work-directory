@@ -11,9 +11,10 @@ use FFI\WorkDirectory\Driver\NonThreadSafeDriver;
 use FFI\WorkDirectory\Driver\WindowsThreadSafeDriver;
 use FFI\WorkDirectory\Tests\Stub\WorkDirectoryFacadeStub;
 use FFI\WorkDirectory\WorkDirectory;
-use PHPUnit\Framework\TestCase as BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestDox;
 
-class WorkDirectoryTestCase extends BaseTestCase
+class WorkDirectoryTest extends TestCase
 {
     /**
      * @return iterable<non-empty-string, DriverInterface>
@@ -55,6 +56,8 @@ class WorkDirectoryTestCase extends BaseTestCase
      *
      * @dataProvider driversDataProvider
      */
+    #[DataProvider('driversDataProvider')]
+    #[TestDox('Checks that the default value in any driver is equivalent to the working directory at initialization.')]
     public function testDefaultEqualsToGlobal(DriverInterface $driver): void
     {
         self::assertSame(\getcwd() ?: null, $driver->get());
@@ -65,6 +68,8 @@ class WorkDirectoryTestCase extends BaseTestCase
      *
      * @dataProvider driversDataProvider
      */
+    #[DataProvider('driversDataProvider')]
+    #[TestDox('Checks that the work directory value in any driver is modifiable.')]
     public function testModifyIsAvailable(DriverInterface $driver): void
     {
         $expected = \realpath(__DIR__ . '/chdir-ascii');
@@ -78,6 +83,8 @@ class WorkDirectoryTestCase extends BaseTestCase
      *
      * @dataProvider driversDataProvider
      */
+    #[DataProvider('driversDataProvider')]
+    #[TestDox('Checks that the work directory value in any driver is modifiable by unicode string.')]
     public function testModifyIsAvailableUsingUnicode(DriverInterface $driver): void
     {
         $expected = \realpath(__DIR__ . '/chdir-unicode-привет-мир');

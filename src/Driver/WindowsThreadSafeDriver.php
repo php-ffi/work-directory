@@ -73,6 +73,7 @@ final class WindowsThreadSafeDriver extends ThreadSafeDriver
     {
         /**
          * @var non-empty-string
+         *
          * @phpstan-ignore-next-line : Allow non-strict short ternary operator
          */
         return \mb_internal_encoding() ?: self::DEFAULT_INTERNAL_ENCODING;
@@ -98,7 +99,6 @@ final class WindowsThreadSafeDriver extends ThreadSafeDriver
     public function get(): ?string
     {
         $bufferSizeDiv2 = self::DEFAULT_EXPECTED_BUFFER_SIZE;
-        // @phpstan-ignore-next-line : FFI object "new" call PHPStan false-positive
         $uint16Array = $this->ffi->new("uint16_t[$bufferSizeDiv2]", false);
         // @phpstan-ignore-next-line : FFI object "addr" call PHPStan false-positive
         $uint16ArrayPointer = \FFI::addr($uint16Array[0]);
@@ -107,8 +107,7 @@ final class WindowsThreadSafeDriver extends ThreadSafeDriver
         $length = (int) $this->ffi->GetDllDirectoryW(self::DEFAULT_EXPECTED_BUFFER_SIZE, $uint16Array);
         $result = null;
 
-        if ($length !== 0) {
-            // @phpstan-ignore-next-line : PHPStan false-positive
+        if ($length > 0) {
             $char8Array = $this->ffi->cast('char*', $uint16ArrayPointer);
             // @phpstan-ignore-next-line : PHPStan false-positive
             $char8ArrayPointer = \FFI::addr($char8Array[0]);
@@ -136,7 +135,6 @@ final class WindowsThreadSafeDriver extends ThreadSafeDriver
         $directory = \mb_convert_encoding($directory, $this->external, $this->internal) . "\0\0";
 
         $bytes = \strlen($directory);
-        // @phpstan-ignore-next-line : PHPStan false-positive
         $charArray = $this->ffi->new("char[$bytes]", false);
         // @phpstan-ignore-next-line : PHPStan false-positive
         $charArrayPointer = \FFI::addr($charArray[0]);
@@ -144,7 +142,7 @@ final class WindowsThreadSafeDriver extends ThreadSafeDriver
         \FFI::memcpy($charArrayPointer, $directory, $bytes);
 
         $bytesDiv2 = (int) \ceil($bytes / 2);
-        $uint16Array = \FFI::cast("uint16_t[$bytesDiv2]", $charArray);
+        $uint16Array = $this->ffi->cast("uint16_t[$bytesDiv2]", $charArray);
         // @phpstan-ignore-next-line : PHPStan false-positive
         $uint16ArrayPointer = \FFI::addr($uint16Array[0]);
 
@@ -162,6 +160,7 @@ final class WindowsThreadSafeDriver extends ThreadSafeDriver
      *     external: non-empty-string,
      *     ...
      * }
+     *
      * @phpstan-ignore-next-line : PHPStan false-positive
      */
     public function __serialize(): array
@@ -174,8 +173,7 @@ final class WindowsThreadSafeDriver extends ThreadSafeDriver
 
     /**
      * @param array{
-     *     internal?: non-empty-string,
-     *     external?: non-empty-string,
+     *     fallback?: non-empty-string|null,
      *     ...
      * } $data
      */
@@ -183,8 +181,11 @@ final class WindowsThreadSafeDriver extends ThreadSafeDriver
     {
         parent::__unserialize($data);
 
-        $this->internal = $data['internal'] ?? $this->getDefaultInternalEncoding();
-        $this->external = $data['external'] ?? $this->getDefaultExternalEncoding();
+        $internal = $data['internal'] ?? null;
+        $external = $data['external'] ?? null;
+
+        $this->internal = \is_string($internal) && $internal !== '' ? $internal : $this->getDefaultInternalEncoding();
+        $this->external = \is_string($external) && $external !== '' ? $external : $this->getDefaultExternalEncoding();
 
         $this->boot();
     }

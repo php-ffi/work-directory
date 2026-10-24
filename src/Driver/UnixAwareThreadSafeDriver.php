@@ -57,6 +57,7 @@ abstract class UnixAwareThreadSafeDriver extends ThreadSafeDriver
          * call to the getenv function.
          *
          * @var CData|null $directory
+         *
          * @phpstan-ignore-next-line : PHPStan false-positive
          */
         $directory = $this->ffi->getenv(static::getEnvVariableName());

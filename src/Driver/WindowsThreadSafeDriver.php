@@ -124,6 +124,13 @@ final class WindowsThreadSafeDriver extends ThreadSafeDriver
 
     public function set(string $directory): bool
     {
+        $directory = self::resolve($directory);
+
+        // SetDllDirectory() accepts any string, a missing directory included.
+        if ($directory === null) {
+            return false;
+        }
+
         if (\mb_detect_encoding($directory, 'ASCII', true) !== false) {
             // @phpstan-ignore-next-line : PHPStan false-positive
             return $this->ffi->SetDllDirectoryA($directory) !== 0;

@@ -65,6 +65,12 @@ abstract class UnixAwareThreadSafeDriver extends ThreadSafeDriver
      */
     public function set(string $directory): bool
     {
+        $directory = self::resolve($directory);
+
+        if ($directory === null) {
+            return false;
+        }
+
         $directories = \array_diff($this->getDirectories(), [$directory]);
         \array_unshift($directories, $directory);
 

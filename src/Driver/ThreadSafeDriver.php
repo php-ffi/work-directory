@@ -25,6 +25,24 @@ abstract class ThreadSafeDriver implements DriverInterface
     }
 
     /**
+     * Resolves the directory the same way {@see \chdir()} does in the
+     * non thread-safe driver: relative to the current working directory.
+     *
+     * @return non-empty-string|null the absolute path, or {@see null} if the
+     *         path does not exist or is not a directory
+     */
+    protected static function resolve(string $directory): ?string
+    {
+        $path = \realpath($directory);
+
+        if ($path === false || !\is_dir($path)) {
+            return null;
+        }
+
+        return $path;
+    }
+
+    /**
      * @return non-empty-string|null
      */
     private function getInitialCurrentWorkingDirectory(): ?string

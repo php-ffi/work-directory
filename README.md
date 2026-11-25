@@ -11,6 +11,14 @@
     <a href="https://github.com/php-ffi/work-directory/actions"><img src="https://github.com/php-ffi/work-directory/workflows/Tests/badge.svg"></a>
 </p>
 
+> [!WARNING]
+> **This package is no longer maintained.**
+>
+> On Linux and macOS the dynamic loader reads `LD_LIBRARY_PATH` /
+> `DYLD_LIBRARY_PATH` only when the PHP process starts, so the directory of the
+> dependencies cannot be changed from PHP. The package works on Windows only.
+> Feel free to copy the parts you need (MIT License).
+
 In the case that during the loading of a binary (like `*.so`, `*.dylib` or `*.dll`)
 through FFI it depends on some other binary module, then errors may occur if the
 first one and dependent libraries are in different directories, like:
@@ -69,7 +77,14 @@ if ($directory !== null) {
 
 ### Update Current Work Directory
 
-Getting the full path to the library.
+Sets the directory the shared libraries (and the libraries they depend on)
+are loaded from. A relative path is resolved against the current working
+directory. If the directory does not exist, `set()` returns `false` and
+changes nothing.
+
+On a non thread-safe build this is a regular `chdir()`. On a thread-safe build
+the working directory of the process is not changed: the directory is passed to
+the dynamic loader instead, and `get()` returns the directory set last.
 
 ```php
 $directory = __DIR__ . '/path/to/directory';
